@@ -1,0 +1,12 @@
+[submodule "maatool-deploy"]
+	path = maatool-deploy
+	url = git@github.com:alejomaf/maatool-deploy.git
+[submodule "maatool-api"]
+	path = maatool-api
+	url = git@github.com:alejomaf/maatool-api.git
+[submodule "maatool-app"]
+	path = maatool-app
+	url = git@github.com:alejomaf/maatool-app.git
+[submodule "maatool-development"]
+	path = maatool-development
+	url = git@github.com:alejomaf/maatool-development.git
