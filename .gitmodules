@@ -1,12 +1,20 @@
 [submodule "maatool-deploy"]
 	path = maatool-deploy
-	url = git@github.com:alejomaf/maatool-deploy.git
+	url = https://github.com/alejomaf/maatool-deploy.git
+	branch = main
 [submodule "maatool-api"]
 	path = maatool-api
-	url = git@github.com:alejomaf/maatool-api.git
+	url = https://github.com/alejomaf/maatool-api.git
+	branch = main
 [submodule "maatool-app"]
 	path = maatool-app
-	url = git@github.com:alejomaf/maatool-app.git
+	url = https://github.com/alejomaf/maatool-app.git
+	branch = main
 [submodule "maatool-development"]
 	path = maatool-development
-	url = git@github.com:alejomaf/maatool-development.git
+	url = https://github.com/alejomaf/maatool-development.git
+	branch = main
+[submodule "maatool-launchpage"]
+	path = maatool-launchpage
+	url = https://github.com/alejomaf/maatool-launchpage.git
+	branch = main
