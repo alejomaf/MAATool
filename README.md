@@ -34,6 +34,10 @@ The application is structured around several independent entities: Social Spaces
 ### Use of Indicators
 MAATool allows the creation and management of indicators, records, and entries that reflect progress toward specific objectives. Indicators can be numerical or textual and vary according to data entries.
 
+### Implementation status
+
+See the [functional audit](FUNCTIONAL_AUDIT.md) for verified changes, test coverage and the remaining incomplete modules.
+
 ### Key Features
 - Project and workgroup management.
 - Tracking of indicators and goal achievement.
