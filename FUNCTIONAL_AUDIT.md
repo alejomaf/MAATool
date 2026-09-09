@@ -6,6 +6,13 @@ La revisión incluye código de la aplicación Angular y de la API NestJS, sus p
 
 
 
+## Transacciones de tareas, historial e hitos (9 de septiembre de 2026)
+
+- API `2e1fb32`: crear tareas, modificar su estado y crear hitos aceptan una transacción externa explícita o abren una propia READ COMMITTED. Comprobaciones, escritura, historial y lectura final comparten conexión. Un error de historial o lectura ya no deja una tarea confirmada por separado. No cambian contratos HTTP ni esquema.
+- Diez pruebas unitarias correctas y tres integraciones con MySQL aislado: commit conjunto, reversión al fallar la lectura final y reversión de alta/estado/historial/hito al fallar la transacción externa. El fixture usa esquemas mínimos y lectura de fila transaccional en lugar de hidratar relaciones completas. Suite general: 916 correctas y 481 omitidas; las tres nuevas integraciones se ejecutaron aparte con su base activada. Build y lint de archivos modificados correctos.
+- La CI API `34344592715` del commit anterior terminó correctamente. Web `34344617931` pasó lint/build/tests y sigue en E2E en la última consulta. Runners propios API/web online y libres. El nuevo commit necesita su propia CI. Este bloque no modifica la interfaz: se conserva la validación previa de escritura/foco, sin afirmar que producción esté actualizada.
+- **Todavía falta la confirmación persistida de propuestas**: endpoint autorizado, estado y resultado duraderos en la transacción, protección contra duplicados y pruebas de concurrencia/reinicio. Se ha preparado el escritor de ejecución; no se presenta como idempotencia terminada. Siguen pendientes las demás carencias de esta auditoría. Sin fusión ni despliegue.
+
 ## Persistencia e identidad de propuestas de Ramón (9 de septiembre de 2026)
 
 - API `34c7990` y web `de4c4d93`: los mensajes conservan los ocho tipos de propuesta. Antes se omitían CREATE_EXECUTION_ITEM, UPDATE_EXECUTION_STATUS y CREATE_ROADMAP_ITEM al guardar, aunque aparecieran durante el streaming. Se añade el evento SSE `message_saved` solo después de persistir, con messageId/chatId/programId y la propuesta guardada. Reabrir el chat devuelve también su programa verificado; el guard comprueba programa además de propietario/archivo y las consultas históricas incluyen el ámbito.
