@@ -6,6 +6,14 @@ La revisión incluye código de la aplicación Angular y de la API NestJS, sus p
 
 
 
+## Transacción compartida de miembros, entidades y objetivos; corrección CI (9 de septiembre de 2026)
+
+- API `6740004`: los escritores de miembros de programa/entidad, el editor de entidades y las altas de objetivos locales/subobjetivos admiten una transacción externa. El guardado local pasa esa misma conexión al escritor de perfil y sus hooks. No se confirma por separado ningún vínculo, atributo, contador o reparto de pesos. Se rechazan gestores inactivos/de otra base y subidas de archivos dentro de una transacción externa, cuya reversión no podría compensar el almacenamiento.
+- Siete casos nuevos MySQL comparan todas las filas de sus fixtures antes/después de provocar un fallo externo. Pasan 78 integraciones de miembros/editor y 27 de objetivos/composición; cinco unitarias del helper. Regresión general: 921 correctas, 488 omitidas sin sus variables de base; las suites mencionadas se ejecutaron aparte con sus bases activadas. Lint completo, build y dos pruebas HTTP de arranque correctos. Objetivos y composición quedan activados también en CI con bases desechables explícitas.
+- La CI API `34345587800` del commit anterior falló en tres hooks beforeEach al reconstruir las tablas de catálogos/configuración/lecturas, con límite predeterminado de cinco segundos. Las aserciones no fueron el origen del fallo. Se fija únicamente el timeout de esos tres hooks a 30 segundos; no se eliminan casos ni se añaden reintentos. Las 28 pruebas afectadas pasan localmente. La nueva CI debe verificar el arreglo en GitHub.
+- Web `34344617931` completada correctamente, incluido E2E, y el arreglo de foco `34342281962` también tiene CI correcta. La escritura sigue verificada en pruebas de navegador, no en una sesión privada de la versión desplegada. Sin cambios web en este bloque, fusión ni despliegue.
+- **Pendiente**: endpoint de confirmación autorizado por mensaje persistido, resultado/estado atómicos, reintentos idempotentes, rechazo persistido, concurrencia, reinicios e históricos. Los escritores están preparados, pero todavía no están conectados a ese protocolo. Continúan las demás carencias del objetivo completo.
+
 ## Transacciones de tareas, historial e hitos (9 de septiembre de 2026)
 
 - API `2e1fb32`: crear tareas, modificar su estado y crear hitos aceptan una transacción externa explícita o abren una propia READ COMMITTED. Comprobaciones, escritura, historial y lectura final comparten conexión. Un error de historial o lectura ya no deja una tarea confirmada por separado. No cambian contratos HTTP ni esquema.
