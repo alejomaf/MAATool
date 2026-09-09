@@ -6,6 +6,16 @@ La revisión incluye código de la aplicación Angular y de la API NestJS, sus p
 
 
 
+## Configuración estándar de entidades protegida y recuperable (9 de septiembre de 2026)
+
+- API `bb2349a` y web `8ab825a4`: las cuatro rutas de ocultar/renombrar campos propios o de hijos comprueban actor activo, entidad real, jerarquía y permiso ADMIN heredado (el nivel que ya exigía el control web). Rechazan campos/IDs inyectados, tipos inválidos y etiquetas excesivas. Las actualizaciones parciales conservan lo omitido; `null` permite restablecer un campo y las etiquetas se recortan.
+- El guardado bloquea programa y entidad y usa READ COMMITTED. Una prueba concurrente detectó que la lectura inicial podía conservar una instantánea antigua y perder un cambio; con esta transacción ambos cambios sobreviven. Las configuraciones históricas compartidas se copian antes de modificarlas y solo se retiran las filas sin referencias. Un fallo posterior revierte la configuración nueva y su enlace.
+- Los formularios envían el ID de la entidad abierta, eliminan IDs internos del cuerpo y trabajan con una copia local de los seis campos. Conservan cambios tras errores, evitan envíos repetidos, cancelan respuestas de destinos anteriores, actualizan el estado tras guardar y permiten volver a editar. Los valores históricos `null` se muestran como desactivados.
+- Validación: siete integraciones nuevas HTTP/MySQL correctas; nueve del editor y ocho de lecturas repetidas y correctas. Regresión API: 890 pasadas y 456 omitidas sin activar las demás bases. Siete pruebas Angular nuevas; batería completa de 664 correctas antes del ajuste final de caché local y seis de componentes repetidas después, incluida su persistencia en estado. Build/lint API y web e integridad de los 24 catálogos correctos.
+- Navegador: 28 recorridos de formularios/editor correctos sobre la compilación final y cuatro de configuración pasados tras completar el catálogo simulado, corregir el nombre accesible del selector y esperar el fin de la petición antes de pulsar de nuevo. Chromium Linux móvil/escritorio, imagen local sin red y API simulada; no hubo escrituras en producción.
+- Las CI anteriores [API 34335634030](https://github.com/alejomaf/maatool-api/actions/runs/34335634030) y [web 34333943761](https://github.com/alejomaf/maatool-app/actions/runs/34333943761) terminaron correctamente. Los nuevos commits requieren su propia CI y publicación coordinada; no se han fusionado ni desplegado.
+- Continúan pendientes, entre otros, las configuraciones de vistas y catálogos adicionales (la ruta de vistas antigua todavía acepta IDs de configuración sin comprobar propiedad), la edición visual de etiquetas de entidades, el borrado de árboles, la idempotencia persistida de Ramón y los diez métodos de confianza sin fórmula acordada. Este bloque no declara completa MAATool.
+
 ## Lecturas de entidades y permisos del usuario actual (9 de septiembre de 2026)
 
 - API `c698ad5`: `/me` consultaba las pertenencias de otros usuarios mediante una condición alternativa por ID y podía tomar el permiso/rol de la primera fila. Ahora utiliza exclusivamente las pertenencias del actor activo al programa y a la entidad/ancestros, con permiso máximo propio y rol propio más próximo. Los no miembros conservan READ en programas públicos, sin adoptar roles de otros usuarios.
