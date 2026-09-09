@@ -6,6 +6,14 @@ La revisión incluye código de la aplicación Angular y de la API NestJS, sus p
 
 
 
+## Lecturas de entidades y permisos del usuario actual (9 de septiembre de 2026)
+
+- API `c698ad5`: `/me` consultaba las pertenencias de otros usuarios mediante una condición alternativa por ID y podía tomar el permiso/rol de la primera fila. Ahora utiliza exclusivamente las pertenencias del actor activo al programa y a la entidad/ancestros, con permiso máximo propio y rol propio más próximo. Los no miembros conservan READ en programas públicos, sin adoptar roles de otros usuarios.
+- Detalle, listados, breadcrumb, dashboard e imágenes comprueban el acceso persistido antes de consultar los datos o almacenamiento. Se rechazan programas ajenos, IDs no canónicos y jerarquías cíclicas o cruzadas. Las imágenes requieren una referencia accesible y usan caché privada sin almacenamiento; el dashboard de lectura omite crear hijos. El breadcrumb conserva su contrato de datos.
+- Ocho integraciones nuevas HTTP/MySQL y nueve del editor pasadas en ejecución secuencial. Cubren permisos propios/heredados, lectura pública, usuarios eliminados, todas las rutas de lectura, imágenes y 1005 pertenencias. Los lectores de payload y S3 están simulados en la nueva suite; las decisiones de acceso usan MySQL real aislado. Regresión general: 890 pruebas pasadas y 449 omitidas sin activar otras bases; dos pruebas HTTP generales, compilación y lint correctos.
+- Antes del commit se repitieron 28 E2E de formularios/editor en Chromium Linux móvil/escritorio sobre la compilación de producción de web `3ae080f5`, sin red y con API simulada. Escritura, borrado, Tab, conservación del texto y reintentos correctos. No es una comprobación autenticada de producción.
+- CI API anterior `34333941150` correcta. La CI web `34333943761` continuaba ejecutando E2E al comprobarla; ambos runners propios estaban online y libres. El nuevo commit requiere su propia CI. No se ha fusionado ni desplegado esta rama; la auditoría general y las carencias descritas siguen abiertas.
+
 ## Propuestas de entidades de Ramón migradas y escritores antiguos retirados (9 de septiembre de 2026)
 
 - Guardado/subido en API `247d49124ddea3aeeb3b3bf1e741a090bd9c2766` y web `3ae080f5efb668a127e0b8560432cd9d6a2a5006`. Nuevas CI [API 34333941150](https://github.com/alejomaf/maatool-api/actions/runs/34333941150) y [web 34333943761](https://github.com/alejomaf/maatool-app/actions/runs/34333943761), pendientes de resultado final.
