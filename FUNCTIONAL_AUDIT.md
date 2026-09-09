@@ -6,6 +6,13 @@ La revisión incluye código de la aplicación Angular y de la API NestJS, sus p
 
 
 
+## Pérdida de foco durante la apertura de diálogos (9 de septiembre de 2026)
+
+- La ejecución web `34337152839` terminó con 759 E2E correctos, 18 omitidos y un fallo móvil de foco en creación de hijos. El autofocus por defecto de Material se ejecutaba tras la animación y podía llevar el cursor al primer control aunque el usuario ya escribiera en otro campo.
+- Se reprodujo el defecto sobre el build anterior en ocho de ocho intentos, escribiendo con 35 ms entre teclas durante la apertura. Web `1698ff34` configura `autoFocus: "dialog"` en creación de hijos y edición de atributos: conserva el foco que ya está dentro del diálogo y mantiene el confinamiento del teclado.
+- Los mismos ocho intentos pasan con el arreglo y conservan el texto completo y la recuperación tras error. También pasan los cuatro E2E de catálogos móvil/escritorio y las 681 pruebas Angular. Build y lint correctos. No se ha debilitado la aserción de foco ni añadido reintentos automáticos para ocultar fallos.
+- Commits subidos a la rama de trabajo. API `cbe4495` tiene CI `34341742876` todavía en curso en la última consulta; web `595e9c7b` inició `34341765639` y el arreglo `1698ff34` necesita su ejecución propia. El estado en curso no se presenta como éxito. Runners propios online/libres; producción no modificada.
+
 ## Catálogos de atributos de entidades y borradores recuperables (9 de septiembre de 2026)
 
 - API `cbe4495` y web `595e9c7b`: los catálogos de programa, raíz, atributos propios e hijos verifican usuario activo, programa real y permisos persistidos. Las altas y los vínculos requieren ADMIN del ámbito, con herencia local; editar definiciones compartidas exige ADMIN de programa. Se completa PUT de atributos de hijos y se retiran los escritores antiguos sin llamadas.
