@@ -6,6 +6,14 @@ La revisión incluye código de la aplicación Angular y de la API NestJS, sus p
 
 
 
+## Cliente de decisiones persistidas de Ramón (9 de septiembre de 2026)
+
+- Web `52745f92` activa proposalProtocol 1, espera el acuse de mensaje guardado y confirma/rechaza únicamente mediante su programa/chat/mensaje capturados. El cuerpo no contiene la operación. Valida identidad y estado de la respuesta antes de modificar la tarjeta. Se retiran las llamadas directas a escritores de miembros, entidades, objetivos y ejecución. El estado se recupera al reabrir; los errores liberan controles y los reintentos mantienen el mismo ID.
+- Antes del guardado los botones permanecen desactivados con explicación, y los históricos requieren regeneración. La caja de texto sigue editable. Se añade el aviso en los 24 idiomas. Un acuse persistido sustituye la previsualización pendiente, sin revertir una decisión terminal cuando llega un acuse tardío.
+- Validación: 695 Angular correctas; 26 E2E de propuestas y ocho de persistencia/reapertura correctos en Chromium Linux móvil/escritorio sobre build de producción. Cubren cancelación, escritura/Retroceso/Tab tras fallo, rechazo persistido, respuesta perdida tras commit y reintento, históricos y mensajes sin acuse. Los fixtures de navegador simulan la API; la suite HTTP/MySQL separada prueba serialización/rollback reales. No es una sesión privada de producción ni un E2E único de todos los dominios. Build/lint y 24 catálogos/2236 claves correctos.
+- API de código `42b3690` tiene CI `34391006220` completada correctamente. API `2e50f57` actualiza solo documentación de integración/orden de publicación. Publicar la API del protocolo antes de este cliente: una API antigua puede rechazar proposalProtocol. No se ha fusionado ni desplegado.
+- El protocolo está conectado en código y verificado por capas; siguen pendientes los otros catálogos/sujetos, borrado completo de árboles, los métodos de confianza sin fórmula acordada y las demás carencias de esta auditoría. Las nuevas CI de los commits deben verificarse; no se declara completa MAATool.
+
 ## API de decisiones persistidas de Ramón (9 de septiembre de 2026)
 
 - API `42b3690`: POST de aceptación/rechazo por programa, chat y mensaje persistido. Carga la propuesta almacenada, ignora cuerpos que pretendan sustituirla, verifica usuario activo/propietario/archivo/ámbito y permisos actuales; bloquea programa, chat y mensaje. Operación y resultado compacto se confirman en una transacción READ COMMITTED. Repetir la misma decisión devuelve el resultado, la contraria produce 409 y un fallo deja PENDING sin cambios de dominio.
