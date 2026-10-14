@@ -1,8 +1,20 @@
 # Auditoría funcional de MAATool
 
-Revisión del 7 de septiembre, actualizada el 13 de octubre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. El inventario estático restante identifica **10 métodos incompletos en 2 servicios**, de los cuales **10 son llamados desde rutas declaradas en controladores**. No son 10 funcionalidades distintas ni una lista exhaustiva de todos los posibles defectos.
+Revisión del 7 de septiembre, actualizada el 14 de octubre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
 
-La revisión incluye código de la aplicación Angular y de la API NestJS, sus pruebas, los README y la especificación y el plan históricos de `maatool-development`. El inventario local actualizado recorre 167 archivos de servicio y 110 controladores, con 595 rutas declaradas. El analizador ahora reconoce también prefijos de controlador expresados como listas. No se ha realizado una validación funcional completa con una sesión autenticada de producción. Las comprobaciones de publicación y runners se detallan a continuación; las pruebas de formularios no han cambiado datos reales.
+La revisión incluye código de la aplicación Angular y de la API NestJS, sus pruebas, los README y la especificación y el plan históricos de `maatool-development`. El inventario local actualizado recorre 166 archivos de servicio y 109 controladores, con 588 rutas declaradas. El analizador ahora reconoce también prefijos de controlador expresados como listas. No se ha realizado una validación funcional completa con una sesión autenticada de producción. Las comprobaciones de publicación y runners se detallan a continuación; las pruebas de formularios no han cambiado datos reales.
+
+## Cumplimiento de objetivos de las partes interesadas (14 de octubre de 2026)
+
+Las tablas históricas de confianza (global y por programa, cada una con puntuación y número de objetivos por pilar) y sus diez métodos esqueleto no tenían fórmula en ningún documento. El usuario propuso basarla en la completitud de los objetivos asociados a cada parte interesada, y se acordó el cálculo siguiente, que la interfaz llama **Cumplimiento**.
+
+**Cálculo** (`maatool-api`, `src/stakeholders/trust`). Cuentan los objetivos asignados a la parte interesada y aquellos a los que aporta datos. Un objetivo completado puntúa 100; uno con la fecha de fin vencida, su porcentaje; uno en curso, su avance frente al esperado por el tiempo transcurrido, con un máximo de 100. Los que no han consumido una cuarta parte de su plazo o no tienen fecha de fin aún no se valoran. La puntuación es la media de 0 a 100, con un decimal, y queda vacía con menos de tres objetivos valorados. La misma regla se aplica por pilar (los del indicador de cada objetivo) y por programa. Se calcula en cada lectura; las rutas de crear, editar y borrar desaparecen y las tablas antiguas se conservan solo por sus relaciones. Rutas `GET /stakeholder-trust/stakeholders/:id` (programas del lector), `/programs/:id` y `/programs/:id/stakeholders/:id` (solo miembros del programa). [Cálculo y verificación](maatool-api/docs/stakeholder-trust.md).
+
+**Aplicación.** Panel «Cumplimiento» en la ficha de la parte interesada (cifra, base de objetivos, pilares, programas y la lista de objetivos con su valoración) y columna en la lista de partes interesadas del programa que abre el detalle de ese programa en un diálogo. 24 textos nuevos en los 24 catálogos.
+
+**Publicación.** API **1e36f53** y aplicación **0584fb07** en main; ambos despliegues terminan correctamente y la web pública sirve `styles-Z2YG6PAM.css` y el catálogo español con «Cumplimiento». La batería completa de navegador previa obtuvo 1948 correctas y dos fallos en `identity-dashboards`, cuyo simulador estricto no contemplaba la nueva consulta; se añadió y ambos casos pasan.
+
+**Verificación.** API: cinco pruebas de la regla y cuatro integraciones con MySQL 8.0 (objetivos asignados y con aportaciones, pilares, programas no visibles, resumen del directorio y acceso); batería completa 1327 correctas y 881 omitidas por falta de sus bases; arranque completo de la API compilada comprobado. Aplicación: 2263 pruebas Angular, lint, catálogos (2700 claves), compilación de producción y diez recorridos de navegador nuevos en escritorio y móvil (ambos temas con contraste AA, lista y diálogo, español y reintento).
 
 ## Informe de actividad de programas y entidades (13 de octubre de 2026)
 
@@ -3299,7 +3311,7 @@ La publicación de estos bloques no completa las áreas pendientes enumeradas m�
 
 ## Carencias que permanecen
 
-El detalle por archivo, línea, método y ruta está en [el inventario JSON](maatool-api/docs/functional-audit-2026-09-08.json). Se genera de forma reproducible con:
+El detalle por archivo, línea, método y ruta está en [el inventario JSON](maatool-api/docs/functional-audit-2026-10-14.json), sin hallazgos; [el del 8 de septiembre](maatool-api/docs/functional-audit-2026-09-08.json) conserva los diez métodos de confianza que había entonces. Se genera de forma reproducible con:
 
 ```bash
 cd maatool-api
@@ -3308,11 +3320,9 @@ node scripts/audit-functional-coverage.cjs --json
 node scripts/audit-functional-coverage.cjs --check
 ```
 
-`--check` termina con código 1 mientras detecta implementaciones provisionales. El analizador detecta respuestas `This action…` y métodos de servicio vacíos; no detecta toda la lógica parcial ni demuestra que los métodos restantes sean correctos.
+`--check` termina con código 0 desde el 14 de octubre y volvería a 1 si apareciera una implementación provisional. El analizador detecta respuestas `This action…` y métodos de servicio vacíos; no detecta toda la lógica parcial ni demuestra que los métodos restantes sean correctos.
 
-| Área pendiente | Métodos detectados | Trabajo pendiente |
-| --- | ---: | --- |
-| Confianza del stakeholder global y por programa | 10 | Completar persistencia, reglas de cálculo, permisos y vistas. La especificación histórica relaciona cumplimiento y valoraciones, pero no define la fórmula; se ha solicitado esa aclaración. Las asignaciones directas y las contribuciones ya están disponibles, sin inventar puntuaciones. |
+La última área pendiente del inventario, la confianza de los stakeholders global y por programa, se resolvió el 14 de octubre de 2026 con una puntuación calculada (ver la sección «Cumplimiento de objetivos de las partes interesadas»).
 
 Hay otras limitaciones observables que no forman parte de esos 10 métodos:
 
