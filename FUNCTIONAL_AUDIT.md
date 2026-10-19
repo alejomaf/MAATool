@@ -16,7 +16,7 @@ La revisión incluye código de la aplicación Angular y de la API NestJS, sus p
 
 **Ramón y la evolución** (`maatool-api` **6c3d75d**). `get_objective_details` incluye ahora `history` en los objetivos con indicador numérico (valor y progreso tras cada fecha con aportaciones, las 12 últimas), de la misma serie que el gráfico, para que Ramón pueda contestar cómo ha evolucionado un objetivo.
 
-**CI.** La ejecución de **7d2c373** falló solo por tiempo: la prueba del editor de entidades que crea más de mil atributos superó los 5 s por defecto de Jest en el runner (3 s en local), sin ninguna aserción fallida; la batería de aportaciones recién activada pasó (17 pruebas). Esa prueba tiene ahora 30 s, como los preparadores de su suite (**aed45d1**, desplegado correctamente).
+**CI.** La ejecución de **7d2c373** falló solo por tiempo: la prueba del editor de entidades que crea más de mil atributos superó los 5 s por defecto de Jest en el runner (3 s en local), sin ninguna aserción fallida; la batería de aportaciones recién activada pasó (17 pruebas). Esa prueba tiene ahora 30 s, como los preparadores de su suite (**aed45d1**, desplegado correctamente). La CI de **aed45d1**, que cubre todos los commits de la API de este día, termina en verde: 2162 pruebas pasadas y 141 omitidas, con todas las integraciones de base de datos de la CI.
 
 ## Ramón: resumen de la semana en el chat y preguntas para empezar (19 de octubre de 2026)
 
