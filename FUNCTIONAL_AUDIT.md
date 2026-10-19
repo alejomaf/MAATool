@@ -4,6 +4,14 @@ Revisión del 7 de septiembre, actualizada el 19 de octubre de 2026. **MAATool t
 
 La revisión incluye código de la aplicación Angular y de la API NestJS, sus pruebas, los README y la especificación y el plan históricos de `maatool-development`. El inventario local actualizado recorre 166 archivos de servicio y 109 controladores, con 588 rutas declaradas. El analizador ahora reconoce también prefijos de controlador expresados como listas. No se ha realizado una validación funcional completa con una sesión autenticada de producción. Las comprobaciones de publicación y runners se detallan a continuación; las pruebas de formularios no han cambiado datos reales.
 
+## Informe de actividad: objetivos al cierre del periodo (19 de octubre de 2026)
+
+**Qué cambia** (`maatool-api` **399f31b**, `maatool-app` **348b6dfd**). El informe mostraba solo el progreso actual de los objetivos, así que un informe de un trimestre pasado no decía cuánto se había avanzado entonces. Ahora cada objetivo medido con un indicador numérico trae `periodEndValue` y `periodEndCompletion`: el valor y el progreso que tenía al cerrar el periodo, reconstruidos con todas las aportaciones fechadas antes del cierre (de cualquier entidad de trabajo, porque el valor del objetivo las suma todas) y con las reglas de MAATool para el valor actual: suma desde el valor inicial (resta si el indicador es decremental), última medición por fecha para indicadores estáticos y progreso entre el valor inicial y la meta, limitado a 0–100. Los objetivos agregados y los de sí/no quedan en blanco porque su historial no se guarda. La tabla de objetivos añade la columna «Al cierre del periodo» (valor / meta y porcentaje) y el Excel, «Valor al cierre del periodo» y «Progreso al cierre del periodo (%)». La nota de la sección lo explica; traducido a los 24 idiomas. [Contrato](maatool-api/docs/activity-reports.md).
+
+**Verificación.** API: pruebas del cálculo (acumulado, decremental, estático por fecha, límites y aportaciones ilegibles, sin indicador numérico) e integración contra MySQL 8.0 y MariaDB 11.4 con indicadores reales: estático, acumulado con una aportación posterior al periodo que no cuenta y decremental sin aportaciones, en tres periodos distintos; suites de informes y resumen semanal con base de datos, 30 correctas. Aplicación: unitarias del informe y del Excel; recorridos de navegador del informe (10, ambos temas, escritorio y móvil, contraste, palabras enteras y español con la etiqueta de la tarjeta en móvil) y auditorías de vistas del informe; capturas revisadas en escritorio y móvil; catálogos con 2817 claves.
+
+**Publicación.** API **399f31b** y aplicación **348b6dfd** en main; ambos despliegues terminan correctamente y la web pública sirve el catálogo español con «Al cierre del periodo». La CI de la API del resumen semanal (**2ca461e**) terminó en verde.
+
 ## Ramón: aceptar en bloque, enlaces y resumen semanal (19 de octubre de 2026)
 
 Siguientes pasos acordados con el usuario tras la mejora de las propuestas de reuniones.
@@ -76,7 +84,7 @@ El plan del proyecto fija tres problemas que la herramienta debía resolver; el 
 
 **Publicación.** API **3eddee6** y aplicación **43d123d0** en main. Ambos despliegues terminan correctamente en los runners del servidor; la web pública sirve la hoja `styles-OSL3ZSNQ.css`, idéntica a la compilación local de producción, y el catálogo español con los textos nuevos. Los commits usan la dirección privada de GitHub de la cuenta porque el modo privado del correo bloqueaba el push.
 
-**Límites.** El progreso de los objetivos es el actual, no el que tenían al cerrar el periodo; el historial de valores no se reconstruye. No se ha probado con datos de producción ni con una sesión real.
+**Límites.** El estado de los objetivos sigue el progreso actual. Desde el 19 de octubre el valor y el progreso al cierre del periodo se reconstruyen para los objetivos con indicador numérico (véase arriba); los agregados y los de sí/no no tienen historial. No se ha probado con datos de producción ni con una sesión real.
 
 ## Estética Común Más Ligera (7 de octubre de 2026)
 
