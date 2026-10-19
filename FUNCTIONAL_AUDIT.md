@@ -1,8 +1,20 @@
 # Auditoría funcional de MAATool
 
-Revisión del 7 de septiembre, actualizada el 14 de octubre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
+Revisión del 7 de septiembre, actualizada el 19 de octubre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
 
 La revisión incluye código de la aplicación Angular y de la API NestJS, sus pruebas, los README y la especificación y el plan históricos de `maatool-development`. El inventario local actualizado recorre 166 archivos de servicio y 109 controladores, con 588 rutas declaradas. El analizador ahora reconoce también prefijos de controlador expresados como listas. No se ha realizado una validación funcional completa con una sesión autenticada de producción. Las comprobaciones de publicación y runners se detallan a continuación; las pruebas de formularios no han cambiado datos reales.
+
+## Calendario de programas y entidades (19 de octubre de 2026)
+
+El plan del proyecto pide un calendario con una visualización completa de los elementos que tienen fecha. No existía ninguna vista que reuniera reuniones, plazos de tareas, hitos y fechas de fin de objetivos.
+
+**API** (`maatool-api` **628f6d2**, `src/calendar`, sin migraciones). `GET /calendar/programs/:programId` y `…/work-entities/:workEntityId` con `from`/`to` (días inclusivos, seis semanas por defecto, máximo 400). Devuelve reuniones (inicio real o programado, sin las canceladas), tareas con fecha límite, hitos y fechas de fin de objetivos, con estado y aviso de vencido; la entidad cubre todo su subárbol. Solo para miembros del programa, porque incluye reuniones internas. Las utilidades del árbol de entidades pasan a `src/core/work-entity-tree.ts`, compartidas con el informe. [Contrato y verificación](maatool-api/docs/calendar.md).
+
+**Aplicación** (`maatool-app` **caf3c693**). Entrada «Calendario» en la barra lateral de programas y entidades: vista mensual que empieza en lunes con el día seleccionado al lado (debajo en pantallas estrechas), vista agenda, filtros por tipo con recuento del mes, aviso de vencidos, navegación con teclado y exportación `.ics` de lo visible. Cada elemento enlaza donde se gestiona: las reuniones se abren con `?meeting=` aunque no estén en la primera página y la ejecución abre la pestaña y la búsqueda indicadas. 27 textos nuevos en los 24 catálogos.
+
+**Verificación.** API: cinco integraciones con MySQL 8.0 y MariaDB 11.4 (orden, campos de cada tipo, exclusiones, vencidos, subárbol, bordes del rango, aislamiento entre programas, pertenencia y validación) y pruebas unitarias del rango y del árbol; batería completa 1345 correctas, lint y compilación correctos. Aplicación: 2290 pruebas Angular (la restante, de foco en `GeneralSnackbarService`, pasa aislada), lint de lo cambiado, catálogos (2727 claves), compilación de producción, catorce recorridos de navegador nuevos en escritorio y móvil (ambos temas con contraste AA, filtros, agenda, exportación, teclado, español, reintento y enlaces a reuniones y ejecución) y 1072 pruebas de las suites afectadas. Se revisaron capturas de escritorio y móvil en ambos temas.
+
+**Publicación.** API y aplicación en main; ambos despliegues y la CI de la API terminan correctamente y la web pública sirve `styles-QOKRCNRJ.css` y el catálogo español con «Calendario del programa». La CI de la autorización de rutas (`6448f05`) también terminó en verde.
 
 ## Autorización de las rutas antiguas (14 de octubre de 2026)
 
