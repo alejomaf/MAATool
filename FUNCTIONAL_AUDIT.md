@@ -1,8 +1,29 @@
 # Auditoría funcional de MAATool
 
-Revisión del 7 de septiembre, actualizada el 29 de octubre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
+Revisión del 7 de septiembre, actualizada el 3 de noviembre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
 
 La revisión incluye código de la aplicación Angular y de la API NestJS, sus pruebas, los README y la especificación y el plan históricos de `maatool-development`. El inventario local actualizado recorre 166 archivos de servicio y 109 controladores, con 588 rutas declaradas. El analizador ahora reconoce también prefijos de controlador expresados como listas. No se ha realizado una validación funcional completa con una sesión autenticada de producción. Las comprobaciones de publicación y runners se detallan a continuación; las pruebas de formularios no han cambiado datos reales.
+
+## Conversaciones inventadas en el silencio y nombres de todos los hablantes (3 de noviembre de 2026)
+
+**Qué pasó.** La transcripción recuperada de la reunión 42 (NARRATIA WP2, 29 de octubre) mezclaba la reunión real con otra en español que parecía de otro día (un clúster de diseño con pilotos en Valencia, Grecia y Castellón, pagos B2B con Sepa y Bizum, despedidas). El audio lo descarta: desde 01:31:15 hasta el final (3 h 00 min 56 s) la grabación es silencio digital (−91 dB medido con ffmpeg). La llamada terminó entonces y la página congelada siguió grabando 90 minutos sin sonido. Gemini recibió cuatro tramos enteros de silencio y devolvió para cada uno una conversación verosímil entre los invitados que nunca existió, pese a la regla del prompt «no inventes voz para el silencio»; la pista de idioma fija (`es-ES` en el bot, `es` en la API) la empujó al español. La retranscripción del 29 por la API, con `gemini-2.5-flash` de `.env.production`, inventó todavía más (bucles de «Qué bueno» y una charla sobre cine). Las notas de Ramón de esos días incluían esa parte; la propuesta aplicada «Elaborar resumen de la sesión y enviar la matriz por correo» (tarea 130 del WP2) sale de ella.
+
+**Cambios** (`maatool-api` `ab08fa3` y `6181758`; `maatool-deploy` `51a6a48`).
+
+- El bot y la API miden el silencio con ffmpeg (`silencedetect`, −50 dB, tramos de 30 s o más; 10 s para tres horas) antes de llamar a Gemini: una grabación sin sonido no se transcribe (y el bot no la pasa a Whisper, que también inventa), un tramo con menos de un segundo de sonido no se envía, y tras unir se descarta cualquier frase sin sonido a menos de 30 s (`silentChunks`, `droppedSilentSegments`, `audibleEndMs` en los metadatos).
+- Producción sin pista de idioma (`auto`) en el bot y en la API, y la API usa `gemini-3.6-flash` como el bot; `auto` ya no se envía como idioma a OpenAI.
+- CI: follow-redirects 1.16.2 (aviso alto de esta semana). Los avisos moderados de glob/minimatch solo se corrigen con typeorm 1.x o sin el plugin stealth (cambios mayores), así que la auditoría bloquea desde nivel alto.
+- Documentación: sección «Silence» en [maatool-api/docs/meeting-transcription.md](maatool-api/docs/meeting-transcription.md).
+
+**Nombres de todos los hablantes.** La grabación de pantalla del bot muestra el nombre de cada asistente en su recuadro y el indicador de Meet de quién habla (borde azul y barras). Una pasada de Gemini sobre el vídeo (10 tramos de 10 min, 1 fps, resolución alta; con resolución media inventa apellidos) leyó el recuadro activo en cada intervención: 290 segmentos, 288 por recuadro y 2 por voz, 96 % del texto de la transcripción de audio en cada franja de 10 minutos. Diez fotogramas comprobados a mano coinciden, incluidos los puntos donde el audio se equivocaba: la presentación de Valle Camonica es de Beatrice Mercanti (el audio la atribuía a Roberta De Bonis Patrignani) y Klatovy la presenta Markéta Kollerová («Michala» en el audio). Hablan nueve personas: Iván Rivero, Niilo Alfthan, Leonidas Liambeys, Beatrice Mercanti, Markéta Kollerová, Giuseppe Rizzo, Álvaro Carrera Barroso, Tuula Löytty y Michele Pagano; asisten sin hablar Roberta De Bonis Patrignani, Daniel Molina, Giacomo Blanco y la cuenta «Katakomby Klatovy (Inf)». Gemini estropea a veces las letras acentuadas en estas respuestas (la «á» sale como \u0001 o como «!»); el tramo afectado se repitió hasta salir limpio.
+
+**Verificación.** 979 pruebas de `meeting-intelligence` y `core` en verde (nuevas: lectura de `silencedetect`, tramos audibles, descarte de frases en silencio, sin Whisper para una grabación silenciosa); el comando real sobre la grabación de la reunión 42 marca el silencio desde 5475,19 s. En producción la transcripción nombrada es el artefacto 38 (`video-speaker-attribution:34`), las 36 y 37 quedan sustituidas, la reunión termina a las 14:31:05 UTC con idioma inglés, y el análisis 13 de Ramón (confianza 0,94) la resume con los ponentes por su nombre y deja 11 propuestas pendientes de revisión.
+
+**Pendiente.**
+
+- La tarea 130 del WP2 («Elaborar resumen de la sesión y enviar la matriz por correo») salió de la conversación inventada y conviene borrarla a mano; las demás propuestas aplicadas el 29 de octubre corresponden a la parte real.
+- Nombrar por el vídeo es por ahora una pasada manual: el bot y la API siguen nombrando por la voz y la conversación.
+- Migración a typeorm 1.x (y sustituir el plugin stealth) para cerrar los avisos moderados de glob/minimatch.
 
 ## Reunión de NARRATIA sin entregar: página de Meet congelada y grabaciones largas (29 de octubre de 2026)
 
