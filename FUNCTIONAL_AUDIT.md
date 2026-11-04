@@ -1,8 +1,22 @@
 # Auditoría funcional de MAATool
 
-Revisión del 7 de septiembre, actualizada el 3 de noviembre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
+Revisión del 7 de septiembre, actualizada el 4 de noviembre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
 
 La revisión incluye código de la aplicación Angular y de la API NestJS, sus pruebas, los README y la especificación y el plan históricos de `maatool-development`. El inventario local actualizado recorre 166 archivos de servicio y 109 controladores, con 588 rutas declaradas. El analizador ahora reconoce también prefijos de controlador expresados como listas. No se ha realizado una validación funcional completa con una sesión autenticada de producción. Las comprobaciones de publicación y runners se detallan a continuación; las pruebas de formularios no han cambiado datos reales.
+
+## Reuniones por pestañas y quién acepta las propuestas de Ramón (4 de noviembre de 2026)
+
+**Qué faltaba.** La página de reuniones lo apilaba todo: la invitación a Ramón, la cuenta de Google Meet, la lista y un detalle muy largo con notas, propuestas, grabación, recuperación del texto y transcripción. Cualquier miembro del programa con escritura podía aceptar o rechazar las propuestas de cualquier reunión, también las de work entities ajenas, y quien pertenecía a una work entity superior no podía revisar las de las inferiores.
+
+**Cambios** (`maatool-api` `1e607cc`; `maatool-app` `b52be442`).
+
+- Pestañas de página: «Tus reuniones» e «Invitar a Ramón» (invitación y Google Meet, con un aviso mientras falte conectar Meet). La vuelta de Google tras conectar abre esa pestaña; una lista vacía ofrece invitar a Ramón y añadir una reunión.
+- Pestañas de la reunión: Resumen, Cambios propuestos (con los pendientes), Transcripción (añadir o completar el texto) y Grabación si la hay. El resumen avisa de los cambios pendientes y cada nota de avance de objetivos lleva a su propuesta. Mientras no se elige una pestaña, la reunión muestra su siguiente paso (el texto si hay que añadirlo o completarlo, las notas cuando están listas); la elegida se mantiene al cambiar de reunión y nunca se oculta un borrador. La dirección guarda vista, reunión y pestaña sin navegar, para no mover el foco; los enlaces del resumen semanal a propuestas abren esa pestaña. Lista y detalle van lado a lado desde 56 rem.
+- Quién revisa: en una reunión de programa, quien escribe en el programa; en una de work entity, los administradores o propietarios del programa y quien escribe en esa work entity o en una superior. Los demás leen las propuestas y ven quién decide. La regla cubre aceptar, rechazar, corregir, la revisión en bloque y la aplicación automática; el detalle de la reunión indica `canReviewProposals`.
+
+**Verificación.** API: 988 pruebas de reuniones, compilación y e2e. Aplicación: 2360 pruebas unitarias, i18n en 24 catálogos, compilación de producción y 1062 e2e de reuniones, propuestas, calendario, resumen semanal y auditoría de vistas, en escritorio y móvil. Las e2e encontraron dos fallos ya corregidos: guardar la pestaña con navegación movía el foco al título y recargar en «Invitar a Ramón» volvía a la lista.
+
+**Despliegue.** Los primeros despliegues fallaron porque el disco del servidor estaba al 100 % (158 GB, compartido con otros proyectos). Se vació la caché de construcción de Docker (14 GB libres después) y se volvieron a lanzar. Queda revisar qué ocupa el resto del disco: el registro de `plausible_events_db` ocupa 3,8 GB y las carpetas de los runners de CI de 2 a 3 GB cada una.
 
 ## Ramón y los subobjetivos: árbol de objetivos y contexto de los hijos de la work entity (3 de noviembre de 2026)
 
