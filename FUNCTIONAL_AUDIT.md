@@ -1,8 +1,26 @@
 # Auditoría funcional de MAATool
 
-Revisión del 7 de septiembre, actualizada el 4 de noviembre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
+Revisión del 7 de septiembre, actualizada el 12 de noviembre de 2026. **MAATool todavía no está completa.** Se han corregido fallos de uso y completado los flujos descritos abajo. Desde el 14 de octubre el inventario estático ya no identifica **ningún método incompleto** (antes, diez en los dos servicios de confianza). Eso no demuestra que el resto sea correcto ni cubre las limitaciones que se enumeran al final.
 
 La revisión incluye código de la aplicación Angular y de la API NestJS, sus pruebas, los README y la especificación y el plan históricos de `maatool-development`. El inventario local actualizado recorre 166 archivos de servicio y 109 controladores, con 588 rutas declaradas. El analizador ahora reconoce también prefijos de controlador expresados como listas. No se ha realizado una validación funcional completa con una sesión autenticada de producción. Las comprobaciones de publicación y runners se detallan a continuación; las pruebas de formularios no han cambiado datos reales.
+
+## Ramón no entraba en reuniones a las que se le invitaba (12 de noviembre de 2026)
+
+**Qué pasó.** Un usuario invitó a Ramón a una reunión el martes 10 de noviembre y Ramón no entró. Ese día la API rechazó cinco invitaciones (de 13:02 a 15:02 UTC) con 401 «Only active members can invite Ramón to a meeting scope» y siguió rechazándolas el 11. El enrutador de correo las marcó como tratadas, así que no se programó ninguna captura y nadie supo por qué. La comprobación solo miraba el remitente del correo y solo aceptaba cuentas en estado `ACTIVE`: quedaban fuera los administradores y moderadores de la plataforma y quien envía la invitación desde una dirección distinta de la de su cuenta. No se ha identificado el remitente, porque no se han leído la base de datos ni el buzón de producción.
+
+**Cambios** (`maatool-api` `265cd40`).
+
+- Pueden invitar a Ramón las cuentas activas, moderadoras y administradoras.
+- Cuenta como invitante el remitente del correo o el organizador del evento del calendario. Sigue haciendo falta ser miembro del programa o de la work entity a la que apunta la dirección de Ramón.
+- Una invitación rechazada envía un correo, en español y en inglés, a quien la mandó: desde qué dirección llegó, si esa dirección no corresponde a ninguna cuenta activa o si la cuenta no es miembro del programa o de la work entity (con su nombre), y qué hacer. Como mucho un aviso cada 12 horas por invitante, dirección de Ramón y evento; las cancelaciones no avisan, y un aviso que no se puede enviar no cambia el rechazo. Documentado en `maatool-api/docs/ramon-meeting-invitations.md`.
+
+**Verificación.** API: 1493 pruebas, entre ellas las nuevas (administradores y moderadores aceptados, organizador aceptado con otro remitente, aviso al rechazar y no al cancelar, rechazo mantenido si el aviso falla, correo bilingüe con fecha y título escapado, deduplicación y reintento), lint, compilación y e2e.
+
+**Despliegue.** «Build & Deploy API» terminó bien el 12 de noviembre; el contenedor arrancó con el servicio de avisos y su plantilla, y el enrutador sigue leyendo el buzón de Ramón cada 30 segundos sin fallos. Tras la construcción quedan 10 GB libres en el disco del servidor (94 % ocupado), así que conviene liberar espacio antes de que otro despliegue lo llene.
+
+**Pendiente.** Saber quién envió las invitaciones del 10 de noviembre y desde qué dirección. Si esa dirección no es la de su cuenta de MAATool, ahora recibirá el aviso, pero tendrá que invitar a Ramón desde la dirección de su cuenta o pedir que le añadan.
+
+**Reunión del WP2 del 12 de noviembre.** Se comprobó en la base de datos de producción (solo lectura) si Ramón entraría a la reunión de las 14:00 «Narratia WP2 - Methodology Deployment and Pilot Design». No entrará, y es lo correcto: la noche anterior (23:12, hora de Madrid) Google Calendar le envió la cancelación de toda la serie quincenal y la reunión 43 quedó cancelada. No llegó ninguna invitación nueva y, tras confirmarlo, se dejó así. Queda un fallo: una cancelación solo cancela la reunión con el mismo identificador de calendario, así que la ocurrencia que se había movido al 3 de diciembre (reunión 48) sigue programada y Ramón intentará entrar ese día.
 
 ## Reuniones por pestañas y quién acepta las propuestas de Ramón (4 de noviembre de 2026)
 
